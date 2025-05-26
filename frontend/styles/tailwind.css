@@ -1,0 +1,64 @@
+/* Custom CSS for Tailwind customizations and overrides */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Keyframes for animations not included in standard Tailwind CDN */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes pulse { /* Redefine pulse keyframes if needed, or ensure Tailwind's is used */
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+/* Keyframes for falling animation */
+@keyframes falling {
+    0% {
+        transform: translateY(-10vh) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(100vh) translateX(calc(var(--horizontal-drift, 0) * 50vw));
+        opacity: 0;
+    }
+}
+
+/* Style for the dynamically generated falling code elements */
+.falling-code-element {
+    position: absolute;
+    top: 0;
+    color: #d9d9d9; /* Use tech-grey color */
+    font-family: 'Roboto Mono', monospace; /* Use the code font */
+    opacity: 0; /* Start invisible */
+    animation: falling linear infinite;
+    text-shadow: 0 0 5px #d9d9d9; /* Add a subtle glow */
+}
+
+/* Ensure the non-active form is hidden */
+.auth-form:not(.active) {
+    display: none;
+}
+
+/* Ensure Font Awesome icons size correctly with Tailwind w/h classes */
+.auth-card i.fas, .auth-card i.fab {
+    font-size: inherit; /* Inherit font size from parent where w/h is applied */
+}
+
+/* Add scrolling and smooth behavior to the auth card content */
+.auth-card {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    max-height: 80vh; /* Add a max height to enable internal scrolling */
+}
+
+/* Hide default select arrow */
+ select.appearance-none::-ms-expand {
+    display: none;
+} 

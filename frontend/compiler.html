@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechLearn - Code Editor</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="assets/logo.png" alt="TechLearn Logo">
+            <span>TechLearn</span>
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="#" class="active">Exercise</a>
+        </div>
+        <div class="nav-profile">
+            <img src="assets/user-icon.png" alt="Profile" id="profile-img">
+            <span id="user-name">User Name</span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="compiler-container">
+        <!-- Exercise Info -->
+        <section class="exercise-info">
+            <h1 id="exercise-title">Exercise Title</h1>
+            <div class="exercise-description" id="exercise-description">
+                <!-- Exercise description will be loaded here -->
+            </div>
+            <div class="exercise-theory" id="exercise-theory">
+                <!-- Theory/explanation will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Code Editor Section -->
+        <section class="editor-section">
+            <div class="editor-tabs">
+                <button class="tab-btn active" data-tab="html">HTML</button>
+                <button class="tab-btn" data-tab="css">CSS</button>
+                <button class="tab-btn" data-tab="js">JavaScript</button>
+            </div>
+            
+            <div class="editor-container">
+                <!-- HTML Editor -->
+                <div class="editor active" id="html-editor">
+                    <textarea id="html-code"></textarea>
+                </div>
+                
+                <!-- CSS Editor -->
+                <div class="editor" id="css-editor">
+                    <textarea id="css-code"></textarea>
+                </div>
+                
+                <!-- JavaScript Editor -->
+                <div class="editor" id="js-editor">
+                    <textarea id="js-code"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Preview Section -->
+        <section class="preview-section">
+            <h3>Preview</h3>
+            <div class="preview-container">
+                <iframe id="preview-frame"></iframe>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button id="run-btn" class="btn-primary">
+                <i class="fas fa-play"></i> Run Code
+            </button>
+            <button id="reset-btn" class="btn-secondary">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+            <button id="save-btn" class="btn-success">
+                <i class="fas fa-save"></i> Save Progress
+            </button>
+        </div>
+    </main>
+
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="scripts/compiler.js"></script>
+</body>
+</html> 

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechLearn - Sign In / Sign Up</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Link to custom Tailwind CSS overrides and additions -->
+    <link rel="stylesheet" href="styles/tailwind.css">
+    <!-- Add Roboto Mono for the background code text -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+     <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'tech-blue': '#070054',
+                'tech-grey': '#d9d9d9',
+                 'gray-800': '#1f2937', // Ensure gray-800 is defined if needed
+                 'gray-900': '#111827', // Ensure gray-900 is defined if needed
+              },
+               animation: {
+                   'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+               }
+            }
+          }
+        }
+      </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-tech-blue to-gray-800 flex items-center justify-center p-4 relative">
+    
+    <!-- Theme Toggle Button (Placeholder - functionality requires React/JS) -->
+    <div class="absolute top-6 right-6 z-10">
+        <!-- <ThemeToggle /> -->
+        <!-- Placeholder for Theme Toggle -->
+    </div>
+
+    <!-- Container for dynamically generated falling code elements -->
+    <div id="falling-code-container" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    
+    <div class="w-full max-w-md z-10"> <!-- Added z-index to keep card above background -->
+        <div class="auth-card p-8 shadow-2xl bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-xl animate-fade-in">
+            
+            <!-- Auth Icon -->
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 rounded-xl bg-[#273047] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-200" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm0 3a2.5 2.5 0 1 1-2.5 2.5A2.503 2.503 0 0 1 12 5Zm0 14.2a7.2 7.2 0 0 1-6-3.2 4.8 4.8 0 0 1 12 0 7.2 7.2 0 0 1-6 3.2Z"/>
+                  </svg>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="text-center mb-8">
+                <h1 id="auth-title" class="text-2xl font-semibold text-white mb-2">Sign in with email</h1>
+                <p id="auth-subtitle" class="text-gray-400">Continue your learning adventure with us</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form space-y-4 active">
+                <div class="relative">
+                     <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <input type="email" id="login-email" name="email" placeholder="Email" required class="pl-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full">
+                </div>
+                <div class="relative">
+                     <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <input type="password" id="login-password" name="password" placeholder="Password" required class="pl-10 pr-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full">
+                     <button type="button" class="password-toggle absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300"><i class="fas fa-eye"></i></button>
+                </div>
+                <!-- Forgot Password Link -->
+                <div class="flex justify-end">
+                    <button type="button" id="forgot-password-link" class="text-sm text-tech-grey hover:text-white transition-colors">Forgot password?</button>
+                </div>
+                <button type="submit" class="w-full h-12 bg-tech-blue hover:bg-tech-blue/80 text-white rounded-xl font-medium text-base transition-all duration-300 hover:shadow-lg">Get Started</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="auth-form space-y-4">
+                 <div class="relative">
+                     <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <input type="text" id="signup-name" name="name" placeholder="Full Name" required class="pl-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full">
+                </div>
+                <div class="relative">
+                     <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <input type="email" id="signup-email" name="email" placeholder="Email" required class="pl-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full">
+                </div>
+                 <div class="relative">
+                     <i class="fas fa-mobile-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <input type="tel" id="signup-mobile" name="mobile" placeholder="Mobile Number" required class="pl-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full">
+                </div>
+                <div class="relative">
+                     <i class="fas fa-venus-mars absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <select id="signup-gender" name="gender" required class="pl-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full appearance-none pr-10">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                     <!-- Custom arrow for select -->
+                    <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="relative">
+                     <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <input type="password" id="signup-password" name="password" placeholder="Password" required class="pl-10 pr-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full">
+                     <button type="button" class="password-toggle absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300"><i class="fas fa-eye"></i></button>
+                </div>
+                <div class="relative">
+                     <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                    <input type="password" id="signup-confirm-password" name="confirmPassword" placeholder="Confirm Password" required class="pl-10 h-12 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-tech-grey focus:ring-tech-grey rounded-xl w-full">
+                     <button type="button" class="password-toggle absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300"><i class="fas fa-eye"></i></button>
+                </div>
+                <button type="submit" class="w-full h-12 bg-tech-blue hover:bg-tech-blue/80 text-white rounded-xl font-medium text-base transition-all duration-300 hover:shadow-lg">Create Account</button>
+            </form>
+
+            <!-- Separator -->
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-600"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-gray-800 text-gray-400">Or sign in with</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Icons -->
+            <div class="mt-4 flex justify-center space-x-4">
+                <button aria-label="Sign in with Google" class="w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition-colors border border-gray-600">
+                     <svg class="w-5 h-5" viewBox="0 0 24 24">
+                       <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                       <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                       <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                       <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                     </svg>
+                 </button>
+              
+                <button aria-label="Sign in with Microsoft" class="w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition-colors border border-gray-600">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.333 5.667H5.667V11.333H11.333V5.667Z" fill="#F25022"/>
+                        <path d="M18.333 5.667H12.667V11.333H18.333V5.667Z" fill="#7FBA00"/>
+                        <path d="M11.333 12.667H5.667V18.333H11.333V12.667Z" fill="#00A4EF"/>
+                        <path d="M18.333 12.667H12.667V18.333H18.333V12.667Z" fill="#FFB900"/>
+                    </svg>
+                 </button>
+              
+                <button aria-label="Sign in with GitHub" class="w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition-colors border border-gray-600">
+                     <svg class="w-5 h-5" fill="#fff" viewBox="0 0 24 24">
+                       <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                         </svg>
+                     </button>
+                </div>
+
+                <!-- Sign Up / Sign In Link -->
+                <div class="mt-6 text-center">
+                    <p class="text-gray-400">
+                         <span id="auth-switch-text">Don't have an account?</span>
+                        <button type="button" id="auth-switch-button" class="ml-2 text-tech-grey hover:text-white font-medium transition-colors">Sign Up</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/auth.js"></script>
+    <script>
+        // Manual script to handle form switching based on the new structure
+        document.addEventListener('DOMContentLoaded', () => {
+            const signUpButton = document.getElementById('auth-switch-button');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const authTitle = document.getElementById('auth-title');
+            const authSubtitle = document.getElementById('auth-subtitle');
+            const authSwitchText = document.getElementById('auth-switch-text');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            
+            // Check if elements were found (optional, but good practice)
+            if (!signUpButton || !loginForm || !signupForm || !authTitle || !authSubtitle || !authSwitchText || !forgotPasswordLink) {
+                console.error('One or more required elements not found!');
+                return; // Stop execution if elements are missing
+            }
+
+            let isSignUp = false; // Track current state
+
+            function updateFormState() {
+                if (isSignUp) {
+                    loginForm.classList.remove('active');
+                    signupForm.classList.add('active');
+                    authTitle.textContent = 'Create Account';
+                    authSubtitle.textContent = 'Start your coding journey with TechLearn Solutions';
+                    authSwitchText.textContent = 'Already have an account?';
+                    signUpButton.textContent = 'Sign In';
+                    forgotPasswordLink.style.display = 'none'; // Hide forgot password on signup
+                } else {
+                    signupForm.classList.remove('active');
+                    loginForm.classList.add('active');
+                    authTitle.textContent = 'Sign in with email';
+                    authSubtitle.textContent = 'Continue your learning adventure with us';
+                    authSwitchText.textContent = "Don't have an account?";
+                    signUpButton.textContent = 'Sign Up';
+                    forgotPasswordLink.style.display = 'flex'; // Show forgot password on login
+                }
+            }
+
+            // Initial state
+            updateFormState();
+
+            // Add event listener to the switch button
+            signUpButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Auth switch button clicked');
+                isSignUp = !isSignUp;
+                updateFormState();
+            });
+
+            // Add event listener to password toggle buttons
+            document.querySelectorAll('.password-toggle').forEach(button => {
+                button.addEventListener('click', () => {
+                    const passwordInput = button.previousElementSibling;
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    // Toggle the eye icon
+                    button.querySelector('i').classList.toggle('fa-eye');
+                    button.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            });
+        });
+
+        const formData = {
+            name: document.getElementById('signup-name').value,
+            email: document.getElementById('signup-email').value,
+            mobile: document.getElementById('signup-mobile').value,
+            gender: document.getElementById('signup-gender').value,
+            password: document.getElementById('signup-password').value,
+            confirm_password: document.getElementById('signup-confirm-password').value
+        };
+    </script>
+    <!-- Link to the new script for falling code effect -->
+    <script src="scripts/falling-code.js"></script>
+</body>
+</html> 
