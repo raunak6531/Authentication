@@ -80,9 +80,9 @@ def signup():
             # Database operation
             cursor = mysql.connection.cursor()
             cursor.execute(
-                "INSERT INTO users (name, email, mobile, gender, password) VALUES (%s,%s,%s,%s,%s)",
-                (name, email, mobile, gender, hashed_password)
-            )
+    "INSERT INTO users (name, email, mobile, gender, password, github) VALUES (%s,%s,%s,%s,%s,%s)",  # Added github
+    (name, email, mobile, gender, hashed_password, form.github.data)  # Added GitHub data
+)
             mysql.connection.commit()
             
             flash('Registration successful! Please login.')
@@ -119,24 +119,26 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    if 'user_id' in session:
-        user_id = session['user_id']
-
-        cursor = mysql.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
-        user = cursor.fetchone()
-        cursor.close()
-
-        if user:
-            return render_template('dashboard.html', user=user)
-            
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
+    user = cursor.fetchone()
+    cursor.close()
+    
+    if not user:
+        flash("User not found.")
+        return redirect(url_for('login'))
+    
     return render_template('dashboard.html', 
         user_name=user[1],   # Name
         user_email=user[2],  # Email
         user_mobile=user[3], # Mobile
-        user_gender=user[4]  # Gender
-    )   
-
+        user_gender=user[4], # Gender
+        user_github=user[6]  # GitHub
+    )
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)

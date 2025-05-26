@@ -58,6 +58,19 @@
       {% endif %}
     </div>
 
+    <!-- GitHub Field -->  <!-- ADDED THIS SECTION -->
+    <div class="form-group">
+      {{ form.github.label(for="github")}}
+      {{ form.github(id="github", class="form-control", placeholder="https://github.com/username")}}
+      {% if form.github.errors %}
+        <ul class="text-danger">
+          {% for error in form.github.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
     <!-- Password Field -->
     <div class="form-group">
       {{ form.password.label(for="password")}}
