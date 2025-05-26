@@ -1,0 +1,26 @@
+# Python virtual environment
+venv/
+
+# Flask environment files (secrets, configs)
+.env
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask instance folder (if used)
+instance/
+
+# VSCode and PyCharm project settings
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+
+# Code Runner extension temp file (from VSCode)
+tempCodeRunnerFile.py
+
+# Logs
+*.log
