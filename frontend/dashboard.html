@@ -3,95 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechLearn - Dashboard</title>
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Dashboard - TechLearn</title>
+    <link rel="stylesheet" href="styles/dashboard.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <img src="assets/logo.png" alt="TechLearn Logo">
-            <span>TechLearn</span>
-        </div>
-        <div class="nav-links">
-            <a href="#" class="active">Dashboard</a>
-            <a href="#">Exercises</a>
-            <a href="#">Progress</a>
-        </div>
-        <div class="nav-profile">
-            <img src="assets/user-icon.png" alt="Profile" id="profile-img">
-            <span id="user-name">User Name</span>
-            <button id="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="dashboard-container">
-        <!-- User Profile Section -->
-        <section class="profile-section">
-            <div class="profile-card">
-                <div class="profile-header">
-                    <img src="assets/user-icon.png" alt="Profile" id="large-profile-img">
-                    <div class="profile-info">
-                        <h2 id="profile-name">User Name</h2>
-                        <p id="profile-email">user@email.com</p>
-                        <p id="profile-bio">Frontend Developer</p>
-                    </div>
-                </div>
-                <div class="profile-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="completed-exercises">0</span>
-                        <span class="stat-label">Completed</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="in-progress">0</span>
-                        <span class="stat-label">In Progress</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="total-exercises">10</span>
-                        <span class="stat-label">Total</span>
-                    </div>
-                </div>
+    <div class="dashboard-container">
+        <header>
+            <h1>Welcome to TechLearn</h1>
+            <div class="user-info">
+                <span id="userName"></span>
+                <button id="logoutBtn">Logout</button>
             </div>
-        </section>
-
-        <!-- Exercises Section -->
-        <section class="exercises-section">
-            <h2>Frontend Development Exercises</h2>
-            <div class="exercises-grid" id="exercises-container">
-                <!-- Exercise cards will be dynamically loaded here -->
+        </header>
+        <main>
+            <div class="dashboard-content">
+                <h2>Your Dashboard</h2>
+                <p>Welcome to your personalized learning space!</p>
+                <!-- Add more dashboard content here -->
             </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>TechLearn</h3>
-                <p>Master frontend development with hands-on exercises</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="#">Dashboard</a>
-                <a href="#">Exercises</a>
-                <a href="#">Progress</a>
-            </div>
-            <div class="footer-section">
-                <h3>Connect</h3>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 TechLearn. All rights reserved.</p>
-        </div>
-    </footer>
-
+        </main>
+    </div>
     <script src="scripts/dashboard.js"></script>
 </body>
 </html> 

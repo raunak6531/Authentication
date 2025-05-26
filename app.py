@@ -1,149 +1,166 @@
-from flask import Flask, render_template, redirect, url_for, session, flash
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Email, ValidationError, EqualTo, Regexp
+from flask import Flask, request, jsonify, session
+from flask_cors import CORS
 import bcrypt
-from flask_mysqldb import MySQL
+import mysql.connector
+from mysql.connector import Error
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env
+# Load environment variables from .env file
+load_dotenv()
+
+# Debug: Print the loaded password
+print(f"Attempting connection with password: {os.getenv('MYSQL_PASSWORD', 'Fallback used')}")
 
 app = Flask(__name__)
+CORS(app)
 
-# MySQL Configuration
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'app_user'         # Changed from root
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')  # Read from .env
-app.config['MYSQL_DB'] = 'mydatabase'
-app.secret_key = os.getenv('SECRET_KEY')
+# Configure session
+app.secret_key = os.urandom(24)
+app.permanent_session_lifetime = timedelta(days=5)
 
-mysql = MySQL(app)
+# Database configuration
+db_config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': os.getenv('MYSQL_PASSWORD', 'Hogwarts9314$'),  # Use environment variable with fallback
+    'database': 'techlearn_auth'
+}
 
-class SignUp(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Email()])
-    mobile = StringField("Mobile", validators=[
-        DataRequired(),
-        Regexp(r'^[0-9]{10}$', message="Invalid mobile number (must be 10 digits)")
-    ])
-    gender = SelectField("Gender", choices=[
-        ('male', 'Male'), 
-        ('female', 'Female'), 
-        ('other', 'Other')
-    ], validators=[DataRequired()])
-    password = PasswordField("Password", validators=[
-        DataRequired(),
-        Regexp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{10,}$',
-               message="Password must contain at least 10 characters, one uppercase, one lowercase, and one number")
-    ])
-    confirm_password = PasswordField("Confirm Password", validators=[
-        DataRequired(),
-        EqualTo('password', message='Passwords must match')
-    ])
-    submit = SubmitField("Sign Up")
+def get_db_connection():
+    try:
+        connection = mysql.connector.connect(**db_config)
+        return connection
+    except Error as e:
+        print(f"Error connecting to MySQL: {e}")
+        return None
 
-    github = StringField("Github Profile", validators=[DataRequired()])
-
-    def validate_email(self, field):
-        cursor = mysql.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE email=%s", (field.data,))
-        user = cursor.fetchone()
-        cursor.close()
-        if user:
-            raise ValidationError('Email Already Taken')
-
-class LoginForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired(), Email()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField("Login")
-
-@app.route('/')
-def home():
-    return render_template('app.html')
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    form = SignUp()
-    if form.validate_on_submit():
+# Create users table if it doesn't exist
+def init_db():
+    conn = get_db_connection()
+    if conn:
         try:
-            # Get form data
-            name = form.name.data
-            email = form.email.data
-            mobile = form.mobile.data
-            gender = form.gender.data
-            password = form.password.data
-
-            # Hash the password (during signup)
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-            # Database operation
-            cursor = mysql.connection.cursor()
-            cursor.execute(
-    "INSERT INTO users (name, email, mobile, gender, password, github) VALUES (%s,%s,%s,%s,%s,%s)",  # Added github
-    (name, email, mobile, gender, hashed_password, form.github.data)  # Added GitHub data
-)
-            mysql.connection.commit()
-            
-            flash('Registration successful! Please login.')
-            return redirect(url_for('login'))
-            
-        except Exception as e:
-            flash('Registration failed. Please try again.')
-            mysql.connection.rollback()
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    email VARCHAR(100) UNIQUE NOT NULL,
+                    mobile VARCHAR(15) NOT NULL,
+                    gender VARCHAR(10) NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            conn.commit()
+        except Error as e:
+            print(f"Error creating table: {e}")
         finally:
             cursor.close()
+            conn.close()
 
-    return render_template('signup.html', form=form)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-
-        cursor = mysql.connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
-        user = cursor.fetchone()
-        cursor.close()
+@app.route('/signup', methods=['POST'])
+def signup():
+    try:
+        data = request.get_json()
+        print("Received signup data:", data)  # Debug log
         
-        if user and bcrypt.checkpw(password.encode('utf-8'), user[5].encode('utf-8')):
-            session['user_id'] = user[0]
-            return redirect(url_for('dashboard'))
-        else:
-            flash("Login failed. Please check your email and password")
-            return redirect(url_for('login'))
+        # Validate required fields
+        required_fields = ['name', 'email', 'mobile', 'gender', 'password']
+        for field in required_fields:
+            if field not in data:
+                print(f"Missing field: {field}")  # Debug log
+                return jsonify({'error': f'Missing required field: {field}'}), 400
 
-    return render_template('login.html', form=form)
+        # Hash the password
+        hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+        
+        conn = get_db_connection()
+        if conn:
+            try:
+                cursor = conn.cursor()
+                print("Attempting to insert user into database")  # Debug log
+                cursor.execute('''
+                    INSERT INTO users (name, email, mobile, gender, password)
+                    VALUES (%s, %s, %s, %s, %s)
+                ''', (
+                    data['name'],
+                    data['email'],
+                    data['mobile'],
+                    data['gender'],
+                    hashed_password
+                ))
+                conn.commit()
+                print("User successfully registered")  # Debug log
+                return jsonify({'message': 'User registered successfully'}), 201
+            except Error as e:
+                print(f"Database error: {str(e)}")  # Debug log
+                if e.errno == 1062:  # Duplicate entry error
+                    return jsonify({'error': 'Email already registered'}), 400
+                return jsonify({'error': str(e)}), 500
+            finally:
+                cursor.close()
+                conn.close()
+        print("Database connection failed")  # Debug log
+        return jsonify({'error': 'Database connection failed'}), 500
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")  # Debug log
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/dashboard')
-def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user_id = session['user_id']
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
-    user = cursor.fetchone()
-    cursor.close()
-    
-    if not user:
-        flash("User not found.")
-        return redirect(url_for('login'))
-    
-    return render_template('dashboard.html', 
-        user_name=user[1],   # Name
-        user_email=user[2],  # Email
-        user_mobile=user[3], # Mobile
-        user_gender=user[4], # Gender
-        user_github=user[6]  # GitHub
-    )
-@app.route('/logout')
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        data = request.get_json()
+        
+        if not data or 'email' not in data or 'password' not in data:
+            return jsonify({'error': 'Email and password are required'}), 400
+
+        conn = get_db_connection()
+        if conn:
+            try:
+                cursor = conn.cursor(dictionary=True)
+                cursor.execute('SELECT * FROM users WHERE email = %s', (data['email'],))
+                user = cursor.fetchone()
+                
+                if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password'].encode('utf-8')):
+                    # Store user info in session
+                    session['user_id'] = user['id']
+                    session['email'] = user['email']
+                    session['name'] = user['name']
+                    
+                    return jsonify({
+                        'message': 'Login successful',
+                        'user': {
+                            'id': user['id'],
+                            'name': user['name'],
+                            'email': user['email']
+                        }
+                    }), 200
+                else:
+                    print("Login failed: Invalid email or password") # Debug log
+                    response_data = {'error': 'Invalid email or password'}
+                    print("Sending login failure response:", response_data) # Debug log
+                    return jsonify(response_data), 401
+            except Error as e:
+                print(f"Database error during login: {str(e)}") # Debug log
+                response_data = {'error': str(e)}
+                print("Sending database error response:", response_data) # Debug log
+                return jsonify(response_data), 500
+            finally:
+                cursor.close()
+                conn.close()
+        print("Database connection failed during login") # Debug log
+        return jsonify({'error': 'Database connection failed'}), 500
+    except Exception as e:
+        print(f"Unexpected error during login: {str(e)}") # Debug log
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/logout', methods=['POST'])
 def logout():
-    session.pop('user_id', None)
-    flash("You have been logged out successfully.")
-    return redirect(url_for('login'))
+    session.clear()
+    return jsonify({'message': 'Logged out successfully'}), 200
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)

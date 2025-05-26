@@ -93,4 +93,41 @@ async function initDashboard() {
 }
 
 // Run initialization when DOM is loaded
-document.addEventListener('DOMContentLoaded', initDashboard); 
+document.addEventListener('DOMContentLoaded', initDashboard);
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is logged in
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        // Redirect to login page if not logged in
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Display user name
+    document.getElementById('userName').textContent = `Welcome, ${user.name}`;
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', async function() {
+        try {
+            const response = await fetch('http://localhost:5000/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                // Clear user data from localStorage
+                localStorage.removeItem('user');
+                // Redirect to login page
+                window.location.href = 'index.html';
+            } else {
+                alert('Error logging out. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while logging out.');
+        }
+    });
+}); 
