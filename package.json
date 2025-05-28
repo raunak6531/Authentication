@@ -1,0 +1,33 @@
+{
+  "name": "techlearn-solutions",
+  "version": "1.0.0",
+  "description": "A comprehensive learning platform for HTML, CSS, and JavaScript",
+  "main": "frontend/index.html",
+  "scripts": {
+    "dev": "python app.py",
+    "start": "python app.py",
+    "build": "echo 'Frontend is static, no build needed'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "learning",
+    "education",
+    "html",
+    "css",
+    "javascript",
+    "coding",
+    "exercises"
+  ],
+  "author": "TechLearn Solutions",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/techlearn-solutions.git"
+  },
+  "homepage": "https://techlearn-solutions.vercel.app"
+}

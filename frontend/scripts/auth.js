@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             console.log('Sending signup request to backend...'); // Debug log
-            const response = await fetch('/signup', {
+            const response = await fetch(`${window.API_BASE_URL}/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Attempting fetch call...'); // Debug log
             console.log('Sending login request to backend... URL: /login'); // Debug log
 
-            const response = await fetch('/login', {
+            const response = await fetch(`${window.API_BASE_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

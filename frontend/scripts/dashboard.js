@@ -7,7 +7,7 @@ let userStatistics = null;
 // API functions
 async function fetchExercises() {
     try {
-        const response = await fetch('/exercises', {
+        const response = await fetch(`${window.API_BASE_URL}/exercises`, {
             credentials: 'include' // Include cookies for session
         });
         if (!response.ok) throw new Error('Failed to fetch exercises');
@@ -56,7 +56,7 @@ async function fetchExercises() {
 
 async function fetchUserProgress() {
     try {
-        const response = await fetch('/progress', {
+        const response = await fetch(`${window.API_BASE_URL}/progress`, {
             credentials: 'include' // Include cookies for session
         });
         if (!response.ok) throw new Error('Failed to fetch user progress');
@@ -80,7 +80,7 @@ async function fetchUserProgress() {
 
 async function fetchUserStatistics() {
     try {
-        const response = await fetch('/statistics', {
+        const response = await fetch(`${window.API_BASE_URL}/statistics`, {
             credentials: 'include' // Include cookies for session
         });
         if (!response.ok) throw new Error('Failed to fetch user statistics');
@@ -846,7 +846,7 @@ function testProgressBars() {
 async function init() {
     // Check authentication first
     try {
-        const authCheck = await fetch('/session-status', {
+        const authCheck = await fetch(`${window.API_BASE_URL}/session-status`, {
             credentials: 'include'
         });
 

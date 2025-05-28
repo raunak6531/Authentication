@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 async function startLearningSession(exerciseId) {
     try {
         // First check if user is authenticated
-        const authCheck = await fetch('/session-status', {
+        const authCheck = await fetch(`${window.API_BASE_URL}/session-status`, {
             credentials: 'include'
         });
 
@@ -60,7 +60,7 @@ async function startLearningSession(exerciseId) {
         console.log('User authenticated, starting session...');
         sessionStartTime = Date.now();
 
-        const response = await fetch('/session/start', {
+        const response = await fetch(`${window.API_BASE_URL}/session/start`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ async function endLearningSession() {
         try {
             const timeSpent = Math.floor((Date.now() - sessionStartTime) / 1000);
 
-            await fetch('/session/end', {
+            await fetch(`${window.API_BASE_URL}/session/end`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ async function loadExercise(exerciseId) {
             theoryContent.innerHTML = '<div class="loading">Loading theory content...</div>';
         }
 
-        const response = await fetch(`/exercises/${exerciseId}`);
+        const response = await fetch(`${window.API_BASE_URL}/exercises/${exerciseId}`);
 
         if (!response.ok) {
             throw new Error('Failed to load exercise');
@@ -203,7 +203,7 @@ async function isExerciseCompleted(exerciseId) {
 
     try {
         // Try to get completion status from backend
-        const response = await fetch('/progress', {
+        const response = await fetch(`${window.API_BASE_URL}/progress`, {
             credentials: 'include' // Include cookies for session
         });
         if (response.ok) {
@@ -810,7 +810,7 @@ async function saveProgress() {
 
     try {
         // Check authentication first
-        const authCheck = await fetch('/session-status', {
+        const authCheck = await fetch(`${window.API_BASE_URL}/session-status`, {
             credentials: 'include'
         });
 
@@ -822,7 +822,7 @@ async function saveProgress() {
         }
 
         // Save to backend
-        const response = await fetch(`/progress/${currentExercise.id}`, {
+        const response = await fetch(`${window.API_BASE_URL}/progress/${currentExercise.id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -867,7 +867,7 @@ async function completeExercise() {
 
     try {
         // Check authentication first
-        const authCheck = await fetch('/session-status', {
+        const authCheck = await fetch(`${window.API_BASE_URL}/session-status`, {
             credentials: 'include'
         });
 
@@ -888,7 +888,7 @@ async function completeExercise() {
         const timeSpent = getSessionTimeSpent();
         actionsPerformed++;
 
-        const response = await fetch(`/progress/${currentExercise.id}`, {
+        const response = await fetch(`${window.API_BASE_URL}/progress/${currentExercise.id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1118,7 +1118,7 @@ async function endCurrentSession() {
     if (sessionId) {
         try {
             const timeSpent = getSessionTimeSpent();
-            const response = await fetch('/session/end', {
+            const response = await fetch(`${window.API_BASE_URL}/session/end`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

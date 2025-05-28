@@ -14,20 +14,44 @@ load_dotenv()
 print(f"Attempting connection with password: {os.getenv('MYSQL_PASSWORD', 'Fallback used')}")
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=['http://localhost:5000', 'http://127.0.0.1:5000'])
 
-# Configure session
-app.secret_key = 'your-secret-key-for-development'  # Use a fixed key for development
+# Production-ready CORS configuration
+allowed_origins = [
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+    'http://localhost:3000',  # For development
+    'https://*.vercel.app',   # For Vercel deployments
+    'https://*.railway.app'   # For Railway deployments
+]
+
+# Add custom domain if specified
+if os.getenv('FRONTEND_URL'):
+    allowed_origins.append(os.getenv('FRONTEND_URL'))
+
+CORS(app, supports_credentials=True, origins=allowed_origins)
+
+# Configure session with production-ready settings
+app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-for-development')
 app.permanent_session_lifetime = timedelta(days=5)
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-# Database configuration
+# Production session configuration
+is_production = os.getenv('FLASK_ENV') == 'production'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = is_production  # HTTPS only in production
+app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'  # Cross-origin in production
+
+# Production optimizations
+if is_production:
+    app.config['DEBUG'] = False
+    app.config['TESTING'] = False
+
+# Database configuration - Production ready
 db_config = {
-    'host': 'localhost',
-    'user': 'root',
+    'host': os.getenv('MYSQL_HOST', 'localhost'),
+    'user': os.getenv('MYSQL_USER', 'root'),
     'password': os.getenv('MYSQL_PASSWORD', 'Hogwarts9314$'),  # Use environment variable with fallback
-    'database': 'techlearn_auth'
+    'database': os.getenv('MYSQL_DATABASE', 'techlearn_auth'),
+    'port': int(os.getenv('MYSQL_PORT', 3306))
 }
 
 def get_db_connection():
@@ -1095,6 +1119,25 @@ def get_exercise_breakdown():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Add security headers for production
+@app.after_request
+def after_request(response):
+    if is_production:
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
+
+# Health check endpoint for Railway
+@app.route('/')
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'message': 'TechLearn Backend is running!',
+        'environment': 'production' if is_production else 'development'
+    }), 200
+
 if __name__ == '__main__':
     init_db()
 
@@ -1102,4 +1145,9 @@ if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    # Production vs Development configuration
+    if is_production:
+        port = int(os.getenv('PORT', 5000))
+        app.run(host='0.0.0.0', port=port, debug=False)
+    else:
+        app.run(debug=True, host='127.0.0.1', port=5000)
