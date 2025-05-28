@@ -1138,16 +1138,27 @@ def health_check():
         'environment': 'production' if is_production else 'development'
     }), 200
 
-if __name__ == '__main__':
-    init_db()
+# Simple health endpoint that Railway can check
+@app.route('/health')
+def simple_health():
+    return "OK", 200
 
+if __name__ == '__main__':
     # Add request logging
     import logging
     logging.basicConfig(level=logging.INFO)
 
+    # Initialize database (but don't fail if it's not available)
+    try:
+        init_db()
+        print("✅ Database initialized successfully")
+    except Exception as e:
+        print(f"⚠️ Database initialization failed: {e}")
+        print("App will start anyway for health checks")
+
     # Production vs Development configuration
+    port = int(os.getenv('PORT', 5000))
     if is_production:
-        port = int(os.getenv('PORT', 5000))
         app.run(host='0.0.0.0', port=port, debug=False)
     else:
         app.run(debug=True, host='127.0.0.1', port=5000)
