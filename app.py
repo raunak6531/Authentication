@@ -319,6 +319,20 @@ def init_db():
             except Error as e:
                 print(f"Error checking/adding code_saved column: {e}")
 
+            try:
+                # Check if github column exists in users table
+                cursor.execute("SHOW COLUMNS FROM users LIKE 'github'")
+                github_exists = cursor.fetchone()
+
+                if not github_exists:
+                    print("Adding missing github column to users table...")
+                    cursor.execute('ALTER TABLE users ADD COLUMN github VARCHAR(255) COMMENT "GitHub profile URL"')
+                    print("✅ Added github column successfully")
+                else:
+                    print("✅ github column already exists")
+            except Error as e:
+                print(f"Error checking/adding github column: {e}")
+
             # Create indexes (ignore errors if they already exist)
             try:
                 cursor.execute('CREATE INDEX idx_users_email ON users(email)')
@@ -474,7 +488,7 @@ def signup():
                     data['mobile'],
                     data['gender'],
                     hashed_password,
-                    data.get('github', '')  # Use empty string if github is not provided
+                    data.get('github', None)  # Use None if github is not provided
                 ))
                 conn.commit()
                 print("User successfully registered")  # Debug log
