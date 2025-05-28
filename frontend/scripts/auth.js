@@ -202,7 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             console.log('Sending signup request to backend...'); // Debug log
-            const response = await fetch(`${window.API_BASE_URL}/signup`, {
+
+            // Fallback for API_BASE_URL
+            const apiBaseUrl = window.API_BASE_URL || 'http://127.0.0.1:5000';
+            console.log('Using API Base URL for signup:', apiBaseUrl); // Debug log
+
+            const response = await fetch(`${apiBaseUrl}/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -259,9 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             console.log('Attempting fetch call...'); // Debug log
+            console.log('API_BASE_URL:', window.API_BASE_URL); // Debug log
+
+            // Fallback for API_BASE_URL
+            const apiBaseUrl = window.API_BASE_URL || 'http://127.0.0.1:5000';
+            console.log('Using API Base URL:', apiBaseUrl); // Debug log
             console.log('Sending login request to backend... URL: /login'); // Debug log
 
-            const response = await fetch(`${window.API_BASE_URL}/login`, {
+            const response = await fetch(`${apiBaseUrl}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -272,6 +282,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log('Fetch call completed.'); // Debug log
             console.log('Login response received:', response); // Debug log
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers.get('content-type'));
+
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const textResponse = await response.text();
+                console.error('Non-JSON response:', textResponse);
+                throw new Error('Server returned non-JSON response. Check if backend is running on http://127.0.0.1:5000');
+            }
 
             const data = await response.json();
             console.log('Login response data:', data); // Debug log

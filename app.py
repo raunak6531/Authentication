@@ -724,6 +724,10 @@ def compiler():
 def frontend_files(filename):
     return send_from_directory('frontend', filename)
 
+@app.route('/config.js')
+def config_js():
+    return send_from_directory('frontend', 'config.js')
+
 # Serve static files (CSS, JS, images)
 @app.route('/styles/<path:filename>')
 def styles(filename):
