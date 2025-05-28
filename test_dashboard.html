@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard Statistics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a2e;
+            color: white;
+        }
+        .test-section {
+            background: #16213e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #0f3460;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #3b82f6;
+        }
+        .result {
+            background: #0f172a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2563eb;
+        }
+        .success {
+            border-left-color: #10b981;
+        }
+        .error {
+            border-left-color: #ef4444;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Dashboard Statistics Test</h1>
+    
+    <div class="test-section">
+        <h2>🔐 Authentication</h2>
+        <button onclick="testLogin()">Test Login</button>
+        <button onclick="testLogout()">Test Logout</button>
+        <div id="auth-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Statistics</h2>
+        <button onclick="testStatistics()">Get Statistics</button>
+        <button onclick="testDebugStatistics()">Get Debug Statistics</button>
+        <div id="stats-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Expected Results</h2>
+        <p><strong>Exercise Count:</strong> Should show "3 of 10" (not "1 of 10")</p>
+        <p><strong>Certificates:</strong> Should be 3 (1 per completed exercise)</p>
+        <p><strong>Daily Streak:</strong> Should be ≥ 1 (updated on login)</p>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Login Successful</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Login Failed</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Login Error</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+        
+        async function testLogout() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = 'Testing logout...';
+            
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Logout Successful</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Logout Error</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+        
+        async function testStatistics() {
+            const resultDiv = document.getElementById('stats-result');
+            resultDiv.innerHTML = 'Getting statistics...';
+            
+            try {
+                const response = await fetch('/statistics', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    
+                    // Analyze the results
+                    const exercises = data.exercises_completed || 0;
+                    const certificates = data.certificates_earned || 0;
+                    const streak = data.daily_streak || 0;
+                    
+                    let analysis = '';
+                    if (exercises >= 3) {
+                        analysis += '✅ Exercise count looks correct\n';
+                    } else {
+                        analysis += '❌ Exercise count still incorrect\n';
+                    }
+                    
+                    if (certificates === exercises) {
+                        analysis += '✅ Certificate count is correct\n';
+                    } else {
+                        analysis += '❌ Certificate count is incorrect\n';
+                    }
+                    
+                    if (streak >= 1) {
+                        analysis += '✅ Daily streak updated\n';
+                    } else {
+                        analysis += '❌ Daily streak not updated\n';
+                    }
+                    
+                    resultDiv.innerHTML = `
+                        <h3>📊 Statistics Retrieved</h3>
+                        <div style="background: #1e293b; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                            <strong>Analysis:</strong><br>
+                            <pre>${analysis}</pre>
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Statistics Failed</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Statistics Error</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+        
+        async function testDebugStatistics() {
+            const resultDiv = document.getElementById('stats-result');
+            resultDiv.innerHTML = 'Getting debug statistics...';
+            
+            try {
+                const response = await fetch('/debug/statistics', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>🔧 Debug Statistics Retrieved</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Debug Statistics Failed</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Debug Statistics Error</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

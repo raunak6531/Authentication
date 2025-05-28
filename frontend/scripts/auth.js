@@ -1,8 +1,6 @@
-// DOM Elements
-const tabBtns = document.querySelectorAll('.tab-btn');
-const authForms = document.querySelectorAll('.auth-form');
-const loginForm = document.getElementById('login-form');
-const signupForm = document.getElementById('signup-form');
+// DOM Elements - will be initialized in DOMContentLoaded
+let loginForm = null;
+let signupForm = null;
 
 // Tab Switching
 /*
@@ -11,7 +9,7 @@ tabBtns.forEach(btn => {
         // Remove active class from all buttons and forms
         tabBtns.forEach(b => b.classList.remove('active'));
         authForms.forEach(f => f.classList.remove('active'));
-        
+
         // Add active class to clicked button and corresponding form
         btn.classList.add('active');
         const formId = btn.dataset.tab + '-form';
@@ -40,88 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 */
 
-// Login Form Handler
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    console.warn('!!! LOGIN FORM SUBMIT EVENT FIRED. PREVENTING DEFAULT.'); // Critical Debug Log
-    console.log('Login form submitted'); // Debug log
-    
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    
-    const loginData = { email, password };
-    console.log('Login data:', loginData); // Debug log
-
-    try {
-        console.log('Attempting fetch call...'); // Debug log
-        console.log('Sending login request to backend... URL: http://localhost:5000/login'); // Debug log
-        const response = await fetch('http://localhost:5000/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginData)
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            // Store user data in localStorage
-            localStorage.setItem('user', JSON.stringify(data.user));
-            // Redirect to dashboard
-            window.location.href = 'dashboard.html';
-        } else {
-            alert(data.message || 'Login failed. Please try again.');
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('An error occurred. Please try again.');
-    }
-});
-
-// Signup Form Handler
-signupForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById('signup-name').value,
-        email: document.getElementById('signup-email').value,
-        mobile: document.getElementById('signup-mobile').value,
-        gender: document.getElementById('signup-gender').value,
-        github: document.getElementById('signup-github').value,
-        password: document.getElementById('signup-password').value,
-        confirm_password: document.getElementById('signup-confirm-password').value
-    };
-    
-    // Validate password match
-    if (formData.password !== formData.confirm_password) {
-        alert('Passwords do not match!');
-        return;
-    }
-    
-    try {
-        const response = await fetch('/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            alert('Registration successful! Please login.');
-            // Switch to login tab
-            document.querySelector('[data-tab="login"]').click();
-        } else {
-            alert(data.message || 'Registration failed. Please try again.');
-        }
-    } catch (error) {
-        console.error('Signup error:', error);
-        alert('An error occurred. Please try again.');
-    }
-});
+// Note: Login and Signup form handlers are now inside DOMContentLoaded event listener below
 
 // Form Validation
 function validateEmail(email) {
@@ -166,20 +83,22 @@ document.getElementById('signup-mobile').addEventListener('blur', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Get form and switch button elements
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
+    // Get form elements
+    loginForm = document.getElementById('login-form');
+    signupForm = document.getElementById('signup-form');
     const authSwitchButton = document.getElementById('auth-switch-button');
     const authTitle = document.getElementById('auth-title');
     const authSubtitle = document.getElementById('auth-subtitle');
     const authSwitchText = document.getElementById('auth-switch-text');
     const forgotPasswordLink = document.getElementById('forgot-password-link');
 
-    // Check if elements were found (optional, but good practice)
+    // Check if elements were found
     if (!loginForm || !signupForm || !authSwitchButton || !authTitle || !authSubtitle || !authSwitchText || !forgotPasswordLink) {
         console.error('One or more required elements not found for auth form handling!');
-        return; // Stop execution if elements are missing
+        return;
     }
+
+    console.log('Auth forms found, setting up event listeners...');
 
     let isSignUp = false; // Track current state
 
@@ -207,12 +126,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial state
     updateFormState();
 
+    // Clear password fields to prevent autofill issues
+    function clearPasswordFields() {
+        const passwordFields = ['signup-password', 'signup-confirm-password', 'login-password'];
+        passwordFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.value = '';
+                field.setAttribute('autocomplete', 'new-password');
+            }
+        });
+    }
+
+    // Clear password fields on page load
+    clearPasswordFields();
+
+    // Function to reset all form fields
+    function resetAllForms() {
+        // Reset login form
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) loginForm.reset();
+
+        // Reset signup form
+        const signupForm = document.getElementById('signup-form');
+        if (signupForm) signupForm.reset();
+
+        // Clear password fields specifically
+        clearPasswordFields();
+    }
+
     // Add event listener to the switch button
     authSwitchButton.addEventListener('click', (e) => {
         e.preventDefault();
         console.log('Auth switch button clicked'); // Debug log
         isSignUp = !isSignUp;
         updateFormState();
+        resetAllForms(); // Clear all form fields when switching
     });
 
     // Add event listener to password toggle buttons
@@ -232,12 +181,13 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         console.warn('!!! SIGNUP FORM SUBMIT EVENT FIRED. PREVENTING DEFAULT.'); // Critical Debug Log
         console.log('Signup form submitted'); // Debug log
-        
+
         const formData = {
             name: document.getElementById('signup-name').value,
             email: document.getElementById('signup-email').value,
             mobile: document.getElementById('signup-mobile').value,
             gender: document.getElementById('signup-gender').value,
+            github: document.getElementById('signup-github').value,
             password: document.getElementById('signup-password').value,
             confirmPassword: document.getElementById('signup-confirm-password').value
         };
@@ -252,11 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             console.log('Sending signup request to backend...'); // Debug log
-            const response = await fetch('http://localhost:5000/signup', {
+            const response = await fetch('/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',  // Include cookies for session
                 body: JSON.stringify(formData)
             });
 
@@ -284,23 +235,38 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         console.warn('!!! LOGIN FORM SUBMIT EVENT FIRED. PREVENTING DEFAULT.'); // Critical Debug Log
         console.log('Login form submitted'); // Debug log
-        
+
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+
+        if (!emailInput || !passwordInput) {
+            console.error('Email or password input not found!');
+            alert('Form inputs not found. Please refresh the page.');
+            return;
+        }
+
         const formData = {
-            email: document.getElementById('login-email').value,
-            password: document.getElementById('login-password').value
+            email: emailInput.value,
+            password: passwordInput.value
         };
 
         console.log('Login data:', formData); // Debug log
 
+        if (!formData.email || !formData.password) {
+            alert('Please enter both email and password.');
+            return;
+        }
+
         try {
             console.log('Attempting fetch call...'); // Debug log
-            console.log('Sending login request to backend... URL: http://localhost:5000/login'); // Debug log
-            
-            const response = await fetch('http://localhost:5000/login', {
+            console.log('Sending login request to backend... URL: /login'); // Debug log
+
+            const response = await fetch('/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',  // Include cookies for session
                 body: JSON.stringify(formData)
             });
 
@@ -314,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Response not OK. Login failed. Status: ${response.status}`); // Debug log for non-ok response
                 throw new Error(data.message || data.error || `Login failed with status: ${response.status}`);
             }
-            
+
             console.log('Response is OK. Parsing JSON data...'); // Debug log before parsing
 
             // Check if data indicates success
@@ -323,12 +289,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store user data in localStorage
                 localStorage.setItem('user', JSON.stringify(data.user));
                 // Redirect to dashboard
-                window.location.href = 'dashboard.html';
+                window.location.href = '/dashboard';
             } else {
                 console.log('Login data did not indicate success.', data); // Debug log
                 throw new Error(data.error || data.message || 'Login failed. Unexpected success response format.');
             }
-            
+
         } catch (error) {
             console.log('Entering catch block...'); // Debug log
             console.error('Login error caught:', error); // Debug log for catch block
@@ -393,4 +359,4 @@ document.addEventListener('DOMContentLoaded', function() {
             this.reportValidity(); // Show validation message
         });
     }
-}); 
+});

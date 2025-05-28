@@ -3,96 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechLearn - Code Editor</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <title>HTML Basics: Creating Your First Webpage</title>
+    <link rel="stylesheet" href="styles/compiler-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/vs-dark.min.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <img src="assets/logo.png" alt="TechLearn Logo">
-            <span>TechLearn</span>
+    <!-- VS Code Window -->
+    <div class="vscode-window">
+        <!-- Window Header -->
+        <div class="window-header">
+            <div class="window-controls">
+                <div class="control-btn close"></div>
+                <div class="control-btn minimize"></div>
+                <div class="control-btn maximize"></div>
+            </div>
+            <div class="window-title">HTML Basics: Creating Your First Webpage</div>
+            <div class="window-actions">
+                <button class="action-btn" onclick="goBackToDashboard()" title="Back to Dashboard">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="action-btn" onclick="saveProgress()" title="Save Progress">
+                    <i class="fas fa-save"></i>
+                </button>
+                <button class="action-btn" onclick="completeExercise()" title="Complete Exercise">
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
         </div>
-        <div class="nav-links">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="#" class="active">Exercise</a>
-        </div>
-        <div class="nav-profile">
-            <img src="assets/user-icon.png" alt="Profile" id="profile-img">
-            <span id="user-name">User Name</span>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="compiler-container">
-        <!-- Exercise Info -->
-        <section class="exercise-info">
-            <h1 id="exercise-title">Exercise Title</h1>
-            <div class="exercise-description" id="exercise-description">
-                <!-- Exercise description will be loaded here -->
-            </div>
-            <div class="exercise-theory" id="exercise-theory">
-                <!-- Theory/explanation will be loaded here -->
-            </div>
-        </section>
-
-        <!-- Code Editor Section -->
-        <section class="editor-section">
-            <div class="editor-tabs">
-                <button class="tab-btn active" data-tab="html">HTML</button>
-                <button class="tab-btn" data-tab="css">CSS</button>
-                <button class="tab-btn" data-tab="js">JavaScript</button>
-            </div>
-            
-            <div class="editor-container">
-                <!-- HTML Editor -->
-                <div class="editor active" id="html-editor">
-                    <textarea id="html-code"></textarea>
+        <!-- Main Layout -->
+        <div class="vscode-layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">EXPLORER</div>
                 </div>
-                
-                <!-- CSS Editor -->
-                <div class="editor" id="css-editor">
-                    <textarea id="css-code"></textarea>
-                </div>
-                
-                <!-- JavaScript Editor -->
-                <div class="editor" id="js-editor">
-                    <textarea id="js-code"></textarea>
+                <div class="file-explorer">
+                    <div class="project-folder">
+                        <div class="folder-header">
+                            <i class="fas fa-chevron-down"></i>
+                            <i class="fas fa-folder-open"></i>
+                            <span>project</span>
+                        </div>
+                        <div class="file-list">
+                            <div class="file-item active" data-file="html">
+                                <i class="fab fa-html5"></i>
+                                <span>index.html</span>
+                            </div>
+                            <div class="file-item" data-file="css">
+                                <i class="fab fa-css3-alt"></i>
+                                <span>style.css</span>
+                            </div>
+                            <div class="file-item" data-file="js">
+                                <i class="fab fa-js-square"></i>
+                                <span>script.js</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Preview Section -->
-        <section class="preview-section">
-            <h3>Preview</h3>
-            <div class="preview-container">
-                <iframe id="preview-frame"></iframe>
+            <!-- Main Content Area -->
+            <div class="main-area">
+                <!-- Tab Bar -->
+                <div class="tab-bar">
+                    <div class="tab-group">
+                        <div class="tab theory-tab active" data-tab="theory">
+                            <i class="fas fa-book"></i>
+                            <span>Theory</span>
+                        </div>
+                        <div class="tab editor-tab" data-tab="editor">
+                            <i class="fas fa-code"></i>
+                            <span>Code Editor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Panels -->
+                <div class="content-area">
+                    <!-- Theory Panel -->
+                    <div class="content-panel theory-panel active" id="theory-panel">
+                        <div class="theory-content" id="theoryContent">
+                            <!-- Theory content will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Editor Panel -->
+                    <div class="content-panel editor-panel" id="editor-panel">
+                        <!-- File Tabs -->
+                        <div class="file-tabs">
+                            <div class="file-tab active" data-file="html">
+                                <i class="fab fa-html5"></i>
+                                <span>index.html</span>
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="file-tab" data-file="css">
+                                <i class="fab fa-css3-alt"></i>
+                                <span>style.css</span>
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="file-tab" data-file="js">
+                                <i class="fab fa-js-square"></i>
+                                <span>script.js</span>
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+
+                        <!-- Editor Container -->
+                        <div class="editor-container">
+                            <div class="editor-wrapper active" id="html-editor-wrapper">
+                                <textarea id="html-editor" placeholder="Write your HTML code here..."></textarea>
+                            </div>
+                            <div class="editor-wrapper" id="css-editor-wrapper">
+                                <textarea id="css-editor" placeholder="Write your CSS code here..."></textarea>
+                            </div>
+                            <div class="editor-wrapper" id="js-editor-wrapper">
+                                <textarea id="js-editor" placeholder="Write your JavaScript code here..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-            <button id="run-btn" class="btn-primary">
-                <i class="fas fa-play"></i> Run Code
-            </button>
-            <button id="reset-btn" class="btn-secondary">
-                <i class="fas fa-redo"></i> Reset
-            </button>
-            <button id="save-btn" class="btn-success">
-                <i class="fas fa-save"></i> Save Progress
-            </button>
+            <!-- Preview Panel -->
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <div class="preview-title">Preview</div>
+                    <div class="preview-controls">
+                        <button class="control-btn" onclick="refreshPreview()" title="Refresh">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="control-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- CodeMirror JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
-    <script src="scripts/compiler.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="scripts/compiler-script.js"></script>
 </body>
-</html> 
+</html>

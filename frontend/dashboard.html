@@ -3,26 +3,479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - TechLearn</title>
+    <title>TechLearn Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Roboto Mono for the background code text -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/dashboard.css">
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'tech-blue': '#070054',
+                'tech-grey': '#d9d9d9',
+                 'gray-800': '#1f2937',
+                 'gray-900': '#111827',
+              },
+               animation: {
+                   'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+               }
+            }
+          }
+        }
+      </script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <header>
-            <h1>Welcome to TechLearn</h1>
-            <div class="user-info">
-                <span id="userName"></span>
-                <button id="logoutBtn">Logout</button>
+    <!-- Background -->
+    <div class="bg-pattern"></div>
+    <div class="bg-dots"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">TechLearn Solutions</div>
+
+                <nav class="nav">
+                    <button class="nav-item active">Dashboard</button>
+                    <button class="nav-item">Progress</button>
+                    <button class="nav-item">Exercises</button>
+                    <button class="nav-item">About</button>
+                </nav>
+
+                <div class="header-right">
+                    <!-- Refresh button -->
+                    <button class="icon-btn-single" title="Refresh Dashboard" onclick="refreshDashboardData()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+
+                    <!-- Settings with text -->
+                    <button class="settings-btn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Setting</span>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button class="icon-btn-single" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                    </button>
+
+                    <!-- User Profile with dropdown -->
+                    <div class="profile-container">
+                        <div class="avatar" title="User Profile" id="profile-btn">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <!-- Logout dropdown -->
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <button class="logout-btn" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </header>
-        <main>
-            <div class="dashboard-content">
-                <h2>Your Dashboard</h2>
-                <p>Welcome to your personalized learning space!</p>
-                <!-- Add more dashboard content here -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Welcome Section -->
+            <div id="dashboard" class="welcome-section">
+                <div class="welcome-greeting">
+                    <h1 class="welcome-title">
+                        <span id="typing-text"></span><span class="static-emoji"> 👋</span>
+                    </h1>
+                    <p class="time-greeting" id="time-greeting">Good Morning!</p>
+                </div>
+
+                <div class="welcome-stats">
+                    <div class="stat-chip" style="animation-delay: 0.2s;">
+                        <span class="stat-icon">✅</span>
+                        <span class="stat-text">4/10 Exercises Completed</span>
+                    </div>
+                    <div class="stat-chip" style="animation-delay: 0.4s;">
+                        <span class="stat-icon">🕒</span>
+                        <span class="stat-text">Last Active: 2 hours ago</span>
+                    </div>
+                    <div class="stat-chip" style="animation-delay: 0.6s;">
+                        <span class="stat-icon">🧠</span>
+                        <span class="stat-text">Level: Intermediate</span>
+                    </div>
+                </div>
             </div>
-        </main>
-    </div>
+
+            <!-- Top Grid -->
+            <div class="top-grid">
+                <!-- Profile Card -->
+                <div class="card profile-card">
+                    <div class="profile-avatar">JD</div>
+                    <h3 class="profile-name">John Doe</h3>
+                    <p class="profile-role">Frontend Developer</p>
+                    <div class="profile-badges">
+                        <div class="skill-badge">JavaScript</div>
+                        <div class="skill-badge">React</div>
+                        <div class="skill-badge">CSS</div>
+                    </div>
+                </div>
+
+                <!-- Progress Cards -->
+                <div class="progress-grid">
+                    <!-- Exercise Progress -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Exercise Progress</span>
+                            <svg class="card-icon" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                            </svg>
+                        </div>
+                        <div class="progress-value" id="exercise-progress-value">0 of 0</div>
+                        <div class="progress-label">Exercises Completed</div>
+                        <div class="exercise-progress-bar">
+                            <div class="progress-fill" id="exercise-progress-fill" style="width: 0%; opacity: 0;"></div>
+                        </div>
+                        <div class="exercise-breakdown" id="exercise-breakdown">
+                            <!-- Breakdown will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Continue Learning -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Continue Learning</span>
+                            <svg class="card-icon" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <div class="continue-learning-content" id="continue-learning-content">
+                            <div class="current-exercise">
+                                <h4 class="exercise-title" id="current-exercise-title">No exercises started yet</h4>
+                            </div>
+                            <button class="resume-btn pulse-btn" id="resume-exercise-btn" onclick="resumeCurrentExercise()" style="display: none;">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                Resume Exercise
+                            </button>
+                            <button class="resume-btn pulse-btn" id="start-first-exercise-btn" onclick="startFirstExercise()" style="display: block;">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                Start Learning
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Learning Goals -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Learning Goals</span>
+                            <span style="color: #f59e0b; font-weight: bold;">30%</span>
+                        </div>
+                        <div class="goals-list" id="goals-list">
+                            <!-- Goals will be populated by JavaScript -->
+                        </div>
+                        <div class="goals-progress">
+                            <div class="goals-progress-text" id="goals-progress-text">0% of Goals Met</div>
+                            <div class="goals-progress-bar">
+                                <div class="goals-progress-fill" id="goals-progress-fill" style="width: 0%; opacity: 0;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div id="people" class="stats-section">
+                <!-- Streak Card -->
+                <div class="metric-card streak-card" data-tooltip="Keep going! You're on fire!" style="animation-delay: 0.1s;">
+                    <div class="metric-icon streak-icon">
+                        <span class="icon-emoji">🔥</span>
+                        <div class="icon-glow streak-glow"></div>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number streak-number">0</div>
+                        <div class="metric-label">Day Streak</div>
+                    </div>
+                </div>
+
+                <!-- Learning Time Card -->
+                <div class="metric-card time-card" data-tooltip="Amazing dedication this week!" style="animation-delay: 0.2s;">
+                    <div class="metric-icon time-icon">
+                        <span class="icon-emoji">⏳</span>
+                        <div class="icon-glow time-glow pulse-animation"></div>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number time-number">0m</div>
+                        <div class="metric-label">Learning This Week</div>
+                    </div>
+                </div>
+
+                <!-- Certificates Card - CLEAN REBUILD -->
+                <div class="metric-card certificate-card">
+                    <div class="metric-icon certificate-icon">
+                        <span class="icon-emoji">🎓</span>
+                        <div class="icon-glow certificate-glow"></div>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-number certificate-number">0</div>
+                        <div class="metric-label">Certificates Earned</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercises Section -->
+            <div id="hiring" class="exercises-section">
+                <h2 class="section-title">
+                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24" style="color: #3b82f6;">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Frontend Development Exercises
+                </h2>
+                <div class="exercises-grid" id="exercises-grid">
+                    <!-- Exercises will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Top Performers Leaderboard -->
+            <div id="leaderboard" class="leaderboard-section">
+                <div class="leaderboard-header">
+                    <h3 class="leaderboard-title">🏆 Top Performers This Week</h3>
+                    <div class="sparkles-container">
+                        <div class="sparkle sparkle-1">✨</div>
+                        <div class="sparkle sparkle-2">⭐</div>
+                        <div class="sparkle sparkle-3">✨</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-list">
+                    <!-- Rank 1 - Gold -->
+                    <div class="performer-card rank-1" data-rank="1">
+                        <div class="rank-badge gold">
+                            <span class="rank-number">1</span>
+                            <div class="trophy-icon">🥇</div>
+                        </div>
+                        <div class="performer-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Alex Chen" class="avatar-img">
+                            <div class="avatar-glow gold-glow"></div>
+                        </div>
+                        <div class="performer-info">
+                            <h4 class="performer-name">Alex Chen</h4>
+                            <div class="performer-stats">
+                                <span class="challenges-completed">15 Challenges</span>
+                                <span class="time-spent">8h 30m</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 95%"></div>
+                            </div>
+                            <span class="progress-text">95% Weekly Goal</span>
+                        </div>
+                        <div class="confetti-container">
+                            <div class="confetti confetti-1">🎉</div>
+                            <div class="confetti confetti-2">🎊</div>
+                        </div>
+                    </div>
+
+                    <!-- Rank 2 - Silver -->
+                    <div class="performer-card rank-2" data-rank="2">
+                        <div class="rank-badge silver">
+                            <span class="rank-number">2</span>
+                            <div class="trophy-icon">🥈</div>
+                        </div>
+                        <div class="performer-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt="Sarah Johnson" class="avatar-img">
+                            <div class="avatar-glow silver-glow"></div>
+                        </div>
+                        <div class="performer-info">
+                            <h4 class="performer-name">Sarah Johnson</h4>
+                            <div class="performer-stats">
+                                <span class="challenges-completed">12 Challenges</span>
+                                <span class="time-spent">6h 45m</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 80%"></div>
+                            </div>
+                            <span class="progress-text">80% Weekly Goal</span>
+                        </div>
+                    </div>
+
+                    <!-- Rank 3 - Bronze -->
+                    <div class="performer-card rank-3" data-rank="3">
+                        <div class="rank-badge bronze">
+                            <span class="rank-number">3</span>
+                            <div class="trophy-icon">🥉</div>
+                        </div>
+                        <div class="performer-avatar">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Mike Rodriguez" class="avatar-img">
+                            <div class="avatar-glow bronze-glow"></div>
+                        </div>
+                        <div class="performer-info">
+                            <h4 class="performer-name">Mike Rodriguez</h4>
+                            <div class="performer-stats">
+                                <span class="challenges-completed">10 Challenges</span>
+                                <span class="time-spent">5h 20m</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                            <span class="progress-text">70% Weekly Goal</span>
+                        </div>
+                    </div>
+
+                    <!-- Rank 4 -->
+                    <div class="performer-card rank-4" data-rank="4">
+                        <div class="rank-badge">
+                            <span class="rank-number">4</span>
+                        </div>
+                        <div class="performer-avatar">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Emma Wilson" class="avatar-img">
+                        </div>
+                        <div class="performer-info">
+                            <h4 class="performer-name">Emma Wilson</h4>
+                            <div class="performer-stats">
+                                <span class="challenges-completed">8 Challenges</span>
+                                <span class="time-spent">4h 15m</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                            <span class="progress-text">60% Weekly Goal</span>
+                        </div>
+                    </div>
+
+                    <!-- Rank 5 -->
+                    <div class="performer-card rank-5" data-rank="5">
+                        <div class="rank-badge">
+                            <span class="rank-number">5</span>
+                        </div>
+                        <div class="performer-avatar">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face" alt="David Kim" class="avatar-img">
+                        </div>
+                        <div class="performer-info">
+                            <h4 class="performer-name">David Kim</h4>
+                            <div class="performer-stats">
+                                <span class="challenges-completed">7 Challenges</span>
+                                <span class="time-spent">3h 50m</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 50%"></div>
+                            </div>
+                            <span class="progress-text">50% Weekly Goal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-gradient-overlay"></div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-main-section">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="footer-title">TechLearn Solutions</h3>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students and professionals with the skills and knowledge needed to excel in the technology industry through expert-led training programs.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook" title="Follow us on Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link twitter" title="Follow us on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link instagram" title="Follow us on Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link linkedin" title="Connect on LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+
+                    <!-- Newsletter Subscription -->
+                    <div class="newsletter-section">
+                        <h4 class="newsletter-title">Stay Updated</h4>
+                        <p class="newsletter-description">Get the latest updates on courses and tech trends</p>
+                        <form class="newsletter-form">
+                            <input type="email" placeholder="Enter your email" class="newsletter-input">
+                            <button type="submit" class="newsletter-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-section-title">Quick Links</h4>
+                    <div class="footer-divider"></div>
+                    <ul class="footer-links">
+                        <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#techprep"><i class="fas fa-code"></i> TechPrep</a></li>
+                        <li><a href="#designlab"><i class="fas fa-palette"></i> DesignLab</a></li>
+                        <li><a href="#summer-intern"><i class="fas fa-briefcase"></i> Summer Internship</a></li>
+                        <li><a href="#mini-projects"><i class="fas fa-project-diagram"></i> Mini Projects</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-section-title">Contact Us</h4>
+                    <div class="footer-divider"></div>
+                    <ul class="footer-links contact-links">
+                        <li>
+                            <a href="mailto:techlearnsolutions@gmail.com">
+                                <i class="fas fa-envelope"></i>
+                                <span>techlearnsolutions@gmail.com</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tel:+919876543210">
+                                <i class="fas fa-phone"></i>
+                                <span>+91 98765 43210</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" target="_blank">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>TechLearn Campus, Bangalore, India - 560001</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2024 TechLearn Solutions. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Top Button -->
+        <button class="back-to-top" id="backToTop" title="Back to Top">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+    </footer>
+
     <script src="scripts/dashboard.js"></script>
+
+
 </body>
-</html> 
+</html>
