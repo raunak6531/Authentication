@@ -56,10 +56,19 @@ db_config = {
 
 def get_db_connection():
     try:
+        print("Attempting database connection with config:")
+        print(f"Host: {db_config['host']}")
+        print(f"User: {db_config['user']}")
+        print(f"Database: {db_config['database']}")
+        print(f"Port: {db_config['port']}")
+        
         connection = mysql.connector.connect(**db_config)
+        print("✅ Database connection successful!")
         return connection
     except Error as e:
-        print(f"Error connecting to MySQL: {e}")
+        print(f"❌ Error connecting to MySQL: {e}")
+        print(f"Error code: {getattr(e, 'errno', 'N/A')}")
+        print(f"SQL state: {getattr(e, 'sqlstate', 'N/A')}")
         return None
 
 # Helper function to update daily streak on login
@@ -1145,7 +1154,15 @@ def health_check():
 # Simple health endpoint that Railway can check
 @app.route('/health')
 def simple_health():
-    return "OK", 200
+    try:
+        # Test database connection
+        conn = get_db_connection()
+        if conn:
+            conn.close()
+            return jsonify({"status": "healthy", "database": "connected"}), 200
+        return jsonify({"status": "unhealthy", "database": "disconnected"}), 503
+    except Exception as e:
+        return jsonify({"status": "unhealthy", "error": str(e)}), 503
 
 if __name__ == '__main__':
     # Add request logging
