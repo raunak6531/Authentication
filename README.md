@@ -2,6 +2,13 @@
 
 A comprehensive web-based learning platform for HTML, CSS, and JavaScript with real-time progress tracking, interactive code editor, and gamified learning experience.
 
+working screen recording - 
+
+
+https://github.com/user-attachments/assets/5d18de78-fcc3-4531-9be2-cf25f396b9aa
+
+
+
 ## 🚀 Features
 
 ### 🔐 Authentication System
